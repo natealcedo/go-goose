@@ -1,12 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
-create table test_table (
+create table public.test_tables (
     id serial primary key,
-    name text
+    name text not null
 );
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-  drop table test_table;
+  drop table public.test_tables;
 -- +goose StatementEnd

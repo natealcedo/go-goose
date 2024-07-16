@@ -2,7 +2,7 @@ APP = goose_app
 
 POSTGRES_CONFIG = "user=postgres password=postgres dbname=goose sslmode=disable"
 
-PHONY: build run clean test migrate install make-migration
+PHONY: run clean test migrate install make-migration
 
 install:
 	go mod tidy
@@ -11,7 +11,7 @@ build:
 	go build -o bin/$(APP)
 
 run: build
-	./bin/$(APP)
+	@export $$(cat .env | xargs) && ./bin/$(APP)
 
 clean:
 	rm -f myapp
