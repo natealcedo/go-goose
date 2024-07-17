@@ -19,19 +19,19 @@ func main() {
 
 	server := http_server.CreateServer("3000")
 
-	testTableService := services.NewPostService(repository.NewGormRepository[models.TestTable](db.DB))
-	testController := controllers.NewController(testTableService, server)
+	postService := services.NewPostService(repository.NewGormRepository[models.Post](db.DB))
+	postController := controllers.NewController(postService, server)
 
 	// Register dynamic route
-	testController.RegisterMethodHandlers("/test/{id}", map[string]func(http.ResponseWriter, *http.Request){
-		"GET":    testController.GetByID,
-		"DELETE": testController.DeleteByID,
+	postController.RegisterMethodHandlers("/posts/{id}", map[string]func(http.ResponseWriter, *http.Request){
+		"GET":    postController.GetByID,
+		"DELETE": postController.DeleteByID,
 	}, true)
 
 	// Register static route
-	testController.RegisterMethodHandlers("/test", map[string]func(http.ResponseWriter, *http.Request){
-		"GET":  testController.Get,
-		"POST": testController.POST,
+	postController.RegisterMethodHandlers("/posts", map[string]func(http.ResponseWriter, *http.Request){
+		"GET":  postController.Get,
+		"POST": postController.POST,
 	}, false)
 
 	err = server.Listen()

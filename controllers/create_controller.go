@@ -64,7 +64,8 @@ func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) POST(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Name string `json:"name"`
+		Title   string `json:"title"`
+		Content string `json:"content"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
