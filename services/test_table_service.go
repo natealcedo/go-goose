@@ -15,17 +15,17 @@ func NewTestTableService(testTableRepository repository.Repository[models.TestTa
 	return &TestTableService{testTableRepository: testTableRepository}
 }
 
-func (s *TestTableService) Create(body interface{}) error {
+func (s *TestTableService) Create(body interface{}) (interface{}, error) {
 	// Convert body to JSON bytes
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Decode JSON bytes into models.TestTable, ignoring ID
 	var testTable models.TestTable
 	if err := json.Unmarshal(bodyBytes, &testTable); err != nil {
-		return errors.New("invalid type")
+		return nil, errors.New("invalid type")
 	}
 
 	// Assuming CreateTestTable is a method that validates and creates a TestTable entry.

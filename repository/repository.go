@@ -7,7 +7,7 @@ import (
 type Repository[T any] interface {
 	GetAll() ([]T, error)
 	GetByID(id string) (T, error)
-	Create(entity T) error
+	Create(entity T) (T, error)
 	Update(entity T) error
 	DeleteByID(id string) error
 }
@@ -35,9 +35,12 @@ func (r *GormRepository[T]) GetByID(id string) (T, error) {
 	return entity, result.Error
 }
 
-func (r *GormRepository[T]) Create(entity T) error {
+func (r *GormRepository[T]) Create(entity T) (T, error) {
 	result := r.db.Create(&entity)
-	return result.Error
+	if result.Error != nil {
+		return entity, result.Error
+	}
+	return entity, nil
 }
 
 func (r *GormRepository[T]) Update(entity T) error {

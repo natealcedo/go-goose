@@ -73,13 +73,14 @@ func (c *Controller) POST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.service.Create(body); err != nil {
+	entity, err := c.service.Create(body)
+	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Failed to process request", http.StatusInternalServerError)
 		return
 	}
 
-	jsonResponse, err := json.Marshal(body)
+	jsonResponse, err := json.Marshal(entity)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
