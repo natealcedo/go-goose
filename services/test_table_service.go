@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/natealcedo/go-goose/models"
 	"github.com/natealcedo/go-goose/repository"
@@ -15,10 +16,21 @@ func NewTestTableService(testTableRepository repository.Repository[models.TestTa
 }
 
 func (s *TestTableService) Create(body interface{}) error {
-	testTable, ok := body.(models.TestTable)
-	if !ok {
+	// Convert body to JSON bytes
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	// Decode JSON bytes into models.TestTable, ignoring ID
+	var testTable models.TestTable
+	if err := json.Unmarshal(bodyBytes, &testTable); err != nil {
 		return errors.New("invalid type")
 	}
+
+	// Ensure the ID is ignored by setting it to its zero value
+	testTable.ID = 0
+
 	// Assuming CreateTestTable is a method that validates and creates a TestTable entry.
 	// This might need to be replaced with the correct method call to create a TestTable entry.
 	return s.testTableRepository.Create(testTable)
