@@ -28,9 +28,6 @@ func (s *TestTableService) Create(body interface{}) error {
 		return errors.New("invalid type")
 	}
 
-	// Ensure the ID is ignored by setting it to its zero value
-	testTable.ID = 0
-
 	// Assuming CreateTestTable is a method that validates and creates a TestTable entry.
 	// This might need to be replaced with the correct method call to create a TestTable entry.
 	return s.testTableRepository.Create(testTable)
