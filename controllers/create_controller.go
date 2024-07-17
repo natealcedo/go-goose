@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/natealcedo/go-goose/http-server"
+	"github.com/natealcedo/go-goose/responses"
 	"github.com/natealcedo/go-goose/services"
 	"net/http"
 	"regexp"
@@ -100,9 +101,13 @@ func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve the item by ID using the service
 	item, err := c.service.GetByID(id)
+	fmt.Println("ITEM", item)
+
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Failed to find item", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(responses.NOT_FOUND)
 		return
 	}
 
@@ -115,5 +120,27 @@ func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
+}
 
+func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
+	// Extract the ID from the URL path
+	pathSegments := strings.Split(r.URL.Path, "/")
+	// Ensure there is an ID part in the URL path
+	if len(pathSegments) < 3 {
+		http.Error(w, "Invalid request path", http.StatusBadRequest)
+		return
+	}
+	id := pathSegments[len(pathSegments)-1] // Assumes the ID is the last segment
+
+	// Retrieve the item by ID using the service
+	err := c.service.DeleteByID(id)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(responses.NOT_FOUND)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 }

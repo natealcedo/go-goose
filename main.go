@@ -24,7 +24,8 @@ func main() {
 
 	// Register dynamic route
 	testController.RegisterMethodHandlers("/test/{id}", map[string]func(http.ResponseWriter, *http.Request){
-		"GET": testController.GetByID,
+		"GET":    testController.GetByID,
+		"DELETE": testController.DeleteByID,
 	}, true)
 
 	// Register static route

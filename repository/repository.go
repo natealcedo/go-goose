@@ -6,10 +6,10 @@ import (
 
 type Repository[T any] interface {
 	GetAll() ([]T, error)
-	GetById(id string) (T, error)
+	GetByID(id string) (T, error)
 	Create(entity T) error
 	Update(entity T) error
-	Delete(id string) error
+	DeleteByID(id string) error
 }
 
 type GormRepository[T any] struct {
@@ -26,9 +26,12 @@ func (r *GormRepository[T]) GetAll() ([]T, error) {
 	return entities, result.Error
 }
 
-func (r *GormRepository[T]) GetById(id string) (T, error) {
+func (r *GormRepository[T]) GetByID(id string) (T, error) {
 	var entity T
 	result := r.db.Where("id = ?", id).Find(&entity)
+	if result.RowsAffected == 0 {
+		return entity, gorm.ErrRecordNotFound
+	}
 	return entity, result.Error
 }
 
@@ -42,8 +45,8 @@ func (r *GormRepository[T]) Update(entity T) error {
 	return result.Error
 }
 
-func (r *GormRepository[T]) Delete(id string) error {
+func (r *GormRepository[T]) DeleteByID(id string) error {
 	var entity T
-	result := r.db.Delete(&entity, id)
+	result := r.db.Where("id = ?", id).Delete(&entity, id)
 	return result.Error
 }

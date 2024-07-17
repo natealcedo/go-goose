@@ -46,9 +46,17 @@ func (s *TestTableService) GetAll() ([]interface{}, error) {
 }
 
 func (s *TestTableService) GetByID(id string) (interface{}, error) {
-	row, err := s.testTableRepository.GetById(id)
+	row, err := s.testTableRepository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
 	return row, nil
+}
+
+func (s *TestTableService) DeleteByID(id string) error {
+	err := s.testTableRepository.DeleteByID(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
