@@ -26,4 +26,7 @@ migrate-reset:
 	 goose -dir migrations postgres $(POSTGRES_CONFIG) reset
 
 make-migration:
-	 goose -dir migrations create $(ARGS) sql
+	 goose -dir migrations create $(filter-out $@,$(MAKECMDGOALS)) sql
+
+%:
+	@:
