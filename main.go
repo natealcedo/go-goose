@@ -1,26 +1,31 @@
 package main
 
 import (
-	"fmt"
+	"github.com/natealcedo/go-goose/controllers"
+	"github.com/natealcedo/go-goose/http-server"
 	"github.com/natealcedo/go-goose/models"
+	"github.com/natealcedo/go-goose/repository"
+	"github.com/natealcedo/go-goose/services"
 )
 
 func main() {
-	db, err := models.CreateClient()
+	db, err := models.CreateDatabaseClient()
+	defer db.Close()
 
 	if err != nil {
 		panic(err)
 	}
 
-	var testTables []models.TestTable
-	result := db.DB.Table("test_tables").Find(&testTables) // Select all records from test_table
-	if result.Error != nil {
-		panic(result.Error)
-	}
+	server := http_server.CreateServer("3000")
 
-	// Print the results
-	for _, testTable := range testTables {
-		fmt.Printf("ID: %d, Name: %s\n", testTable.ID, testTable.Name)
+	testTableService := services.NewTestTableService(repository.NewGormRepository[models.TestTable](db.DB))
+	testController := controllers.NewController(testTableService, server)
+	testController.RegisterHandler("/test", testController.Get)
+
+	err = server.Listen()
+
+	if err != nil {
+		panic(err)
 	}
 
 }
