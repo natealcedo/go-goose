@@ -20,6 +20,10 @@ func main() {
 
 	server := http_server.CreateServer("3000")
 
+	server.RegisterHandler("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/posts", http.StatusPermanentRedirect)
+	})
+
 	postService := services.NewPostService(repository.NewGormRepository[models.Post](db.DB), db.DB)
 	postController := controllers.NewController(postService, server)
 
