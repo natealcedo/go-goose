@@ -14,7 +14,7 @@ run: build
 	@export $$(cat .env | xargs) && ./bin/$(APP)
 
 clean:
-	rm -f myapp
+	rm -f ./bin/$(APP)
 
 test:
 	go test ./...
