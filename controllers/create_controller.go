@@ -103,7 +103,6 @@ func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve the item by ID using the service
 	item, err := c.service.GetByID(id)
-	fmt.Println("ITEM", item)
 
 	if err != nil {
 		fmt.Println(err)
