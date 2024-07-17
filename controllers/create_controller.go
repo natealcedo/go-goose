@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/natealcedo/go-goose/http-server"
 	"github.com/natealcedo/go-goose/services"
 	"net/http"
@@ -19,8 +20,14 @@ func NewController(service services.GenericService, server *http_server.Server) 
 	}
 }
 
-func (c *Controller) RegisterHandler(path string, handler func(http.ResponseWriter, *http.Request)) {
-	c.server.RegisterHandler(path, handler)
+func (c *Controller) RegisterMethodHandlers(path string, methodHandlers map[string]func(http.ResponseWriter, *http.Request)) {
+	c.server.RegisterHandler(path, func(w http.ResponseWriter, r *http.Request) {
+		if handler, exists := methodHandlers[r.Method]; exists {
+			handler(w, r)
+		} else {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
 }
 
 func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
@@ -41,18 +48,28 @@ func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) POST(w http.ResponseWriter, r *http.Request) {
-	var body interface{}
+	var body struct {
+		Name string `json:"name"`
+	}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	if err := c.service.Create(body); err != nil {
+		fmt.Println(err)
 		http.Error(w, "Failed to process request", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Successfully processed request"))
+	w.Header().Set("Content-Type", "application/json")
+	jsonResponse, err := json.Marshal(body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(jsonResponse)
 }
