@@ -9,12 +9,13 @@ import (
 )
 
 type PostService struct {
-	PostService repository.Repository[models.Post]
-	db          *gorm.DB
+	PostService   repository.Repository[models.Post]
+	db            *gorm.DB
+	relationships []string
 }
 
 func NewPostService(postRepository repository.Repository[models.Post], db *gorm.DB) *PostService {
-	return &PostService{PostService: postRepository, db: db}
+	return &PostService{PostService: postRepository, db: db, relationships: []string{"Comments"}}
 }
 
 func (s *PostService) Create(body interface{}) (interface{}, error) {
@@ -47,23 +48,25 @@ func (s *PostService) GetAll() ([]interface{}, error) {
 	return interfaceSlice, nil
 }
 
-func (s *PostService) GetByID(id string, model interface{}, relationships []string) (interface{}, error) {
+func (s *PostService) GetByID(id string) (interface{}, error) {
 	query := s.db
 
 	// Dynamically preload relationships
-	for _, relation := range relationships {
+	for _, relation := range s.relationships {
 		query = query.Preload(relation)
 	}
 
+	var post models.Post
+
 	// Fetch the model by ID, preloading the specified relationships
-	result := query.First(model, "id = ?", id) // model is already a pointer to a struct
+	result := query.First(&post, "id = ?", id) // model is already a pointer to a struct
 	if result.Error != nil {
 		// Return nil and the error if any
 		return nil, result.Error
 	}
 
 	// Return the fetched model and nil error if fetch was successful
-	return model, nil
+	return post, nil
 }
 
 func (s *PostService) DeleteByID(id string) error {
@@ -72,4 +75,8 @@ func (s *PostService) DeleteByID(id string) error {
 		return err
 	}
 	return nil
+}
+
+func (s *PostService) Relationships() []string {
+	return s.relationships
 }
