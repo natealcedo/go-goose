@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/natealcedo/go-goose/http-server"
+	"github.com/natealcedo/go-goose/http_server"
 	"github.com/natealcedo/go-goose/interfaces"
 	"github.com/natealcedo/go-goose/responses"
 	"net/http"

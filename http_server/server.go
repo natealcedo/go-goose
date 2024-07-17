@@ -2,9 +2,24 @@ package http_server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"time"
 )
+
+func loggerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		// Log the incoming request
+		log.Printf("Started %s %s", r.Method, r.URL.Path)
+
+		next.ServeHTTP(w, r)
+
+		// Log the completed request with duration
+		log.Printf("Completed %s in %v", r.URL.Path, time.Since(start))
+	})
+}
 
 func removeTrailingSlash(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -44,9 +59,10 @@ func (s *Server) Listen() error {
 func CreateServer(port string) *Server {
 	mux := http.NewServeMux()
 	wrappedMux := removeTrailingSlash(mux)
+	loggedMux := loggerMiddleware(wrappedMux)
 	httpServer := &http.Server{
 		Addr:    ":" + port,
-		Handler: wrappedMux,
+		Handler: loggedMux,
 	}
 	return &Server{
 		httpServer: httpServer,
