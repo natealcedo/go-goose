@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/natealcedo/go-goose/http-server"
+	"github.com/natealcedo/go-goose/models"
 	"github.com/natealcedo/go-goose/responses"
 	"github.com/natealcedo/go-goose/services"
 	"net/http"
@@ -102,7 +103,8 @@ func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 	id := pathSegments[len(pathSegments)-1] // Assumes the ID is the last segment
 
 	// Retrieve the item by ID using the service
-	item, err := c.service.GetByID(id)
+	var post models.Post
+	item, err := c.service.GetByID(id, &post, []string{"Comments"})
 
 	if err != nil {
 		fmt.Println(err)

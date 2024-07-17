@@ -5,14 +5,16 @@ import (
 	"errors"
 	"github.com/natealcedo/go-goose/models"
 	"github.com/natealcedo/go-goose/repository"
+	"gorm.io/gorm"
 )
 
 type PostService struct {
 	PostService repository.Repository[models.Post]
+	db          *gorm.DB
 }
 
-func NewPostService(postRepository repository.Repository[models.Post]) *PostService {
-	return &PostService{PostService: postRepository}
+func NewPostService(postRepository repository.Repository[models.Post], db *gorm.DB) *PostService {
+	return &PostService{PostService: postRepository, db: db}
 }
 
 func (s *PostService) Create(body interface{}) (interface{}, error) {
@@ -45,12 +47,23 @@ func (s *PostService) GetAll() ([]interface{}, error) {
 	return interfaceSlice, nil
 }
 
-func (s *PostService) GetByID(id string) (interface{}, error) {
-	row, err := s.PostService.GetByID(id)
-	if err != nil {
-		return nil, err
+func (s *PostService) GetByID(id string, model interface{}, relationships []string) (interface{}, error) {
+	query := s.db
+
+	// Dynamically preload relationships
+	for _, relation := range relationships {
+		query = query.Preload(relation)
 	}
-	return row, nil
+
+	// Fetch the model by ID, preloading the specified relationships
+	result := query.First(model, "id = ?", id) // model is already a pointer to a struct
+	if result.Error != nil {
+		// Return nil and the error if any
+		return nil, result.Error
+	}
+
+	// Return the fetched model and nil error if fetch was successful
+	return model, nil
 }
 
 func (s *PostService) DeleteByID(id string) error {

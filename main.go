@@ -19,7 +19,7 @@ func main() {
 
 	server := http_server.CreateServer("3000")
 
-	postService := services.NewPostService(repository.NewGormRepository[models.Post](db.DB))
+	postService := services.NewPostService(repository.NewGormRepository[models.Post](db.DB), db.DB)
 	postController := controllers.NewController(postService, server)
 
 	// Register dynamic route
