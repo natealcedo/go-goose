@@ -6,6 +6,7 @@ import (
 	"github.com/natealcedo/go-goose/models"
 	"github.com/natealcedo/go-goose/repository"
 	"github.com/natealcedo/go-goose/services"
+	"net/http"
 )
 
 func main() {
@@ -20,7 +21,10 @@ func main() {
 
 	testTableService := services.NewTestTableService(repository.NewGormRepository[models.TestTable](db.DB))
 	testController := controllers.NewController(testTableService, server)
-	testController.RegisterHandler("/test", testController.Get)
+	testController.RegisterMethodHandlers("/test", map[string]func(http.ResponseWriter, *http.Request){
+		"GET":  testController.Get,
+		"POST": testController.POST,
+	})
 
 	err = server.Listen()
 
