@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 create table public.test_tables (
-    id serial primary key,
+    id uuid primary key default gen_random_uuid(),
     name text not null
 );
 -- +goose StatementEnd
