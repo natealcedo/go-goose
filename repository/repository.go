@@ -28,7 +28,7 @@ func (r *GormRepository[T]) GetAll() ([]T, error) {
 
 func (r *GormRepository[T]) GetById(id string) (T, error) {
 	var entity T
-	result := r.db.First(&entity, id)
+	result := r.db.Where("id = ?", id).Find(&entity)
 	return entity, result.Error
 }
 

@@ -44,3 +44,11 @@ func (s *TestTableService) GetAll() ([]interface{}, error) {
 	}
 	return interfaceSlice, nil
 }
+
+func (s *TestTableService) GetByID(id string) (interface{}, error) {
+	row, err := s.testTableRepository.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	return row, nil
+}

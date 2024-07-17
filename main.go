@@ -21,10 +21,17 @@ func main() {
 
 	testTableService := services.NewTestTableService(repository.NewGormRepository[models.TestTable](db.DB))
 	testController := controllers.NewController(testTableService, server)
+
+	// Register dynamic route
+	testController.RegisterMethodHandlers("/test/{id}", map[string]func(http.ResponseWriter, *http.Request){
+		"GET": testController.GetByID,
+	}, true)
+
+	// Register static route
 	testController.RegisterMethodHandlers("/test", map[string]func(http.ResponseWriter, *http.Request){
 		"GET":  testController.Get,
 		"POST": testController.POST,
-	})
+	}, false)
 
 	err = server.Listen()
 
