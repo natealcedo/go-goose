@@ -52,9 +52,7 @@ func (s *PostService) GetByID(id string) (interface{}, error) {
 	query := s.db
 
 	// Dynamically preload relationships
-	for _, relation := range s.relationships {
-		query = query.Preload(relation)
-	}
+	query = query.Preload("Comments")
 
 	var post models.Post
 
@@ -76,8 +74,4 @@ func (s *PostService) DeleteByID(id string) error {
 		return result.Error
 	}
 	return nil
-}
-
-func (s *PostService) Relationships() []string {
-	return s.relationships
 }

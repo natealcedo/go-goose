@@ -5,5 +5,4 @@ type GenericService interface {
 	GetAll() ([]interface{}, error)
 	GetByID(id string) (interface{}, error)
 	DeleteByID(id string) error
-	Relationships() []string
 }

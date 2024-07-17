@@ -23,6 +23,9 @@ func main() {
 	postService := services.NewPostService(repository.NewGormRepository[models.Post](db.DB), db.DB)
 	postController := controllers.NewController(postService, server)
 
+	commentsService := services.NewCommentService(repository.NewGormRepository[models.Comment](db.DB), db.DB)
+	commentsController := controllers.NewController(commentsService, server)
+
 	// Register dynamic route
 	postController.RegisterMethodHandlers("/posts/{id}", map[string]func(http.ResponseWriter, *http.Request){
 		"GET":    postController.GetByID,
@@ -33,6 +36,10 @@ func main() {
 	postController.RegisterMethodHandlers("/posts", map[string]func(http.ResponseWriter, *http.Request){
 		"GET":  postController.Get,
 		"POST": postController.POST,
+	}, false)
+
+	commentsController.RegisterMethodHandlers("/comments", map[string]func(http.ResponseWriter, *http.Request){
+		"GET": commentsController.Get,
 	}, false)
 
 	err = server.Listen()

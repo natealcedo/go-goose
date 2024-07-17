@@ -10,7 +10,3 @@ type Post struct {
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 	Comments  []Comment `gorm:"foreignKey:PostId" json:"comments,omitempty"`
 }
-
-func (Post) TableName() string {
-	return "posts"
-}
