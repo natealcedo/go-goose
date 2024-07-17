@@ -1,7 +1,7 @@
 package models
 
 type TestTable struct {
-	ID   string `gorm:"primaryKey" json:"id"`
+	ID   string `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
 	Name string `gorm:"column:name" json:"name"`
 }
 
