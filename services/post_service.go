@@ -70,9 +70,10 @@ func (s *PostService) GetByID(id string) (interface{}, error) {
 }
 
 func (s *PostService) DeleteByID(id string) error {
-	err := s.PostService.DeleteByID(id)
-	if err != nil {
-		return err
+	var post models.Post
+	result := s.db.Where("id = ?", id).Delete(&post)
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }
