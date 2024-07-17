@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/natealcedo/go-goose/controllers"
+	"github.com/natealcedo/go-goose/database"
 	"github.com/natealcedo/go-goose/http-server"
 	"github.com/natealcedo/go-goose/models"
 	"github.com/natealcedo/go-goose/repository"
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	db, err := models.CreateDatabaseClient()
+	db, err := database.CreateDatabaseClient()
 	defer db.Close()
 
 	if err != nil {
